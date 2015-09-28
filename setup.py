@@ -1,4 +1,4 @@
-
+VERSION = 0.1.1
 try:
     from setuptools import setup
 except ImportError:
@@ -8,9 +8,9 @@ config = {
     'description': 'JITT Command Line Tool',
     'author': 'Adam Kariv',
     'url': 'http://jitt.it',
-    'download_url': 'http://jitt.it',
+    'download_url': 'https://github.com/EverythingMe/jitter/tarball/'+VERSION,
     'author_email': 'adam@everything.me',
-    'version': '0.1',
+    'version': VERSION,
     'install_requires': [
         'click',
         'nose',
