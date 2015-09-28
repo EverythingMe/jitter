@@ -1,3 +1,4 @@
 jitter.egg-info/
 *pyc
 dist/
+build/
