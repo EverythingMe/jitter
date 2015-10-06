@@ -75,10 +75,10 @@ The process is simple:
 
 1. Follow the progress of translation through the JITT.io dashboard, or by using jitter:
 
-       $ jitter status users <API key> <API secret>
-       ...
-       $ jitter status resources <API key> <API secret>
-       ...
+         $ jitter status users <API key> <API secret>
+         ...
+         $ jitter status resources <API key> <API secret>
+         ...
 
    Add `--format csv` to receive the results in a tabular CSV format (default is `json` format)
 
