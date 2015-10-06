@@ -90,9 +90,10 @@ def process_pack(root_dir,server_pack):
                         plural_name=name_parts[0]
                         parent = root.xpath("plurals[@name='%s']" % plural_name)
                         if len(parent)==0:
-                            print "creating plurals el ",name_parts
+                            # Not found - create a new plurals element
                             parent = etree.fromstring('<plurals name="%s"></plurals>' % plural_name)
                             parent.append(new_el)
+                            new_el = parent
                             parent = root
                         else:
                             parent = parent[0]

@@ -4,8 +4,9 @@ from traverse import traverse, PLURALS
 
 def create_pack(root_dir="."):
     strings = {}
-
+    
     def add_rec(el,subel,kind,designator,locale,name,canonic_name,text,filename,priority,context):
+
         if kind == 'quantity':
             allowed_quantities = ['zero','one','two','few','many','other']
             if locale is not None:

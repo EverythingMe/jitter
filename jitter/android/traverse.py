@@ -38,10 +38,12 @@ def traverse(rootdir, visitor):
                 fn = os.path.join(dirpath,fn)
                 original_filename = fn.replace(rootdir,'')
                 parser = etree.XMLParser(remove_blank_text=True)
-                root = etree.parse(fn,parser)
-                res = root.xpath('/resources')
+                tree = etree.parse(fn,parser)
+                root = tree.getroot()
+                if root.tag!='resources':
+                    continue
                 globalcontext = None
-                for el in res[0]:
+                for el in root:
                     if el.tag == 'string':
                         name = el.get('name')
                         priority = el.get('priority',4)
@@ -71,9 +73,9 @@ def traverse(rootdir, visitor):
                         plural_translatable = el.get('translatable')
                         for item in el:
                             quantity = item.get('quantity')
-                            priority = item.get('priority',array_priority)
-                            context = item.get('context',array_context)
-                            translatable = item.get('translatable',array_translatable) != 'false'
+                            priority = item.get('priority',plural_priority)
+                            context = item.get('context',plural_context)
+                            translatable = item.get('translatable',plural_translatable) != 'false'
                             text = item.text
                             if translatable:
                                 canonic_name = "%s::P::%s" % (plural_name,quantity)
