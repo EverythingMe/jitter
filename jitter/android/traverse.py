@@ -25,7 +25,11 @@ def traverse(rootdir, visitor):
     for dirpath, dirnames, filenames in os.walk(rootdir):
         locale = None
         lastpart = os.path.split(dirpath)[1]
-        if lastpart.startswith('values') and 'build' not in dirpath.split(os.path.sep):
+        path_splits = set(dirpath.split(os.path.sep))
+        avoided = set(['build','bin'])
+        if len(path_splits.intersection(avoided)) > 0:
+            continue
+        if lastpart.startswith('values'):
             parts = lastpart.split('-')
             if len(parts)==1:
                 locale=None
