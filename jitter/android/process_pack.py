@@ -64,7 +64,7 @@ def process_pack(root_dir,server_pack):
                 if len(name_parts) == 1:
                     new_el = etree.fromstring('<string name="%s"></string>' % name_parts[0])
                     new_el.text = text
-                    print name_parts[0],"<-",text
+                    print name_parts[0],"<==",locale,"<==",text.encode('utf8')
                     parent=root
                 elif len(name_parts) == 3:
                     if name_parts[1] == 'A':
