@@ -2,7 +2,9 @@ from __future__ import print_function
 import sys
 import click
 import json
+import csv
 import requests
+import urllib
 from hashlib import sha1
 import hmac
 import time
@@ -106,3 +108,121 @@ def link(apikey,secret,userid,locale,server):
     server = server.rstrip('/')
     url = '%s/#/start/%s/%s/%s/%s' % (server,apikey,locale,token,userid)
     print(url)
+
+@entrypoint.group()
+def status():
+    "Get status on resources and users"
+    pass
+
+def flatten(recs,path):
+
+    def copy_dict(rec):
+        out = {}
+        for k,v in rec.items():
+            if type(v) is dict:
+                for k1,v1 in copy_dict(v).items():
+                    out["%s.%s" % (k,k1)] = v1
+            elif type(v) is list:
+                pass
+            else:
+                if type(v) is unicode:
+                    v = v.encode('utf8')
+                out[k] = v
+        return out
+
+    for rec in recs:
+        if len(path) > 0:
+            first = path[0]
+            rest = path[1:]
+            divein = rec.get(first,[])
+            if first in rec:
+                del rec[first]
+            for inner in flatten(divein,rest):
+                out = copy_dict(rec)
+                for k,v in inner.items():
+                    out["%s.%s" % (first,k)] = v
+                yield out
+        else:
+            out = copy_dict(rec)
+            yield out
+
+@status.command()
+@click.argument('apikey')
+@click.argument('secret')
+@click.option('--server', help='JITT server to fetch data from', default='http://jitt.io')
+@click.option('--format', help='Output format (csv/json), default is json', default='json')
+@click.option('--output', help='Output filename, default is stdout')
+def resources(apikey,secret,server,format,output=None):
+    "Get app's resource status"
+    token = get_token(secret.encode('utf8'))
+    fileinfo = requests.get('%s/api/admin/files/%s' % (server,apikey), {'token':token}).json()
+    files = fileinfo['files'].keys()
+    locales = fileinfo['locales']
+    res = []
+    for fn in files:
+        for locale in locales:
+            resources = requests.get('%s/api/admin/resources/%s/%s/%s' % (server,apikey,locale,urllib.quote_plus(fn)), {'token':token}).json()
+            for resource in resources:
+                res.append({u'filename':fn,'resources':resources})
+    if output is None:
+        output = sys.stdout
+    else:
+        output = open(output,"w")
+    if format == 'json':
+        json.dump(res,output)
+    elif format == "csv":
+        records = flatten(res,['resources','suggestions'])
+        writer=csv.DictWriter(output,[
+                     u'filename',
+                     u'resources.resource_id',
+                     u'resources.text',
+                     u'resources.context',
+                     u'resources.priority',
+                     u'resources.created_at',
+                     u'resources.stats.last_suggestion_added',
+                     u'resources.stats.skipped',
+                     u'resources.stats.unclear',
+                     u'resources.stats.weight',
+                     u'resources.suggestions.created_at',
+                     u'resources.suggestions.locale',
+                     u'resources.suggestions.text',
+                     u'resources.suggestions.score',
+                     ],extrasaction='ignore')
+        writer.writeheader()
+        writer.writerows(records)
+
+@status.command()
+@click.argument('apikey')
+@click.argument('secret')
+@click.option('--server', help='JITT server to fetch data from', default='http://jitt.io')
+@click.option('--format', help='Output format (csv/json), default is json', default='json')
+@click.option('--output', help='Output filename, default is stdout')
+def users(apikey,secret,server,format,output):
+    "Get app's user status"
+    token = get_token(secret.encode('utf8'))
+    users = requests.get('%s/api/admin/users/%s' % (server,apikey), {'token':token}).json()
+    if output is None:
+        output = sys.stdout
+    else:
+        output = open(output,"w")
+    if format == 'json':
+        json.dump(users,output)
+    elif format == 'csv':
+        records = flatten(users,['localeStats'])
+        writer=csv.DictWriter(output,[u'userid',
+                     u'created_at',
+                     u'last_activity',
+                     u'stats.approved',
+                     u'stats.flagged',
+                     u'stats.received',
+                     u'stats.served',
+                     u'stats.translated',
+                     u'localeStats.locale',
+                     u'localeStats.approved',
+                     u'localeStats.flagged',
+                     u'localeStats.received',
+                     u'localeStats.served',
+                     u'localeStats.translated',
+                     ],extrasaction='ignore')
+        writer.writeheader()
+        writer.writerows(records)

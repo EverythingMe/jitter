@@ -1,6 +1,6 @@
 # Jitter - JITT command line interface
 
-JITT is a crowd-sourcing localization service. It holds all your resources along with their translations, and allows your users to suggest better translations or vote on current translations.
+JITT is a crowd-sourcing localization service. It holds all your resources along with their translations, and allows your users to suggest better translations or vote on current ones.
 
 JITT will automatically evaluate each user's translation credibility and give each suggested localization a quality score.
 
@@ -79,6 +79,8 @@ The process is simple:
        ...
        $ jitter status resources <API key> <API secret>
        ...
+
+   Add `--format csv` to receive the results in a tabular CSV format (default is `json` format)
 
 1. At any point, you can download results and merge them to your work-tree
 
