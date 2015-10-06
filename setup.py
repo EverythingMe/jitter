@@ -1,4 +1,4 @@
-VERSION = "0.1.6"
+VERSION = "0.1.7"
 try:
     from setuptools import setup
 except ImportError:
@@ -17,8 +17,8 @@ config = {
         'lxml',
     ],
     'data_files':[
-        ('jitter/android/', ['locales.json','plurals.json']),
-    ]
+        ('jitter/android/', ['jitter/android/locales.json','jitter/android/plurals.json']),
+    ],
     'packages': ['jitter', 'jitter.android'],
     'scripts': [],
     'name': 'jitter',
