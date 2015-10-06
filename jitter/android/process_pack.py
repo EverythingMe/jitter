@@ -26,7 +26,7 @@ def process_pack(root_dir,server_pack):
             if text is not None:
                 if subel.text != text:
                     subel.text = text
-                    print canonic_name,"<--",locale,"<--",text
+                    print canonic_name,"<--",locale,"<--",text.encode('utf8')
                     modified = True
                 del localized[locale]
                 if len(localized)==0:
