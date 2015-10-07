@@ -55,7 +55,13 @@ def upload(apikey,secret,packfile,server):
     try:
         resp = requests.post(url,params={'apikey':apikey,'token':token},data=packfile.read())
         if resp.status_code == 200:
-            print(resp.text)
+            resp = resp.json()
+            if resp['success']:
+                print("Successfully uploaded %d strings to JITT server." % resp['processed'])
+                print("Once JITT process your upload, you should be able to see them at %s/#/resources/%s" % (server,apikey))
+                print("(Be patient - it might take a few minutes to update on the server)")
+            else:
+                print("Some error occurred... got response %r" % resp)
         else:
             print('Error %d: %s' % (resp.status_code,resp.reason),file=sys.stderr)
     except Exception,e:
