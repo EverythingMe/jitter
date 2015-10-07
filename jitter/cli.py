@@ -71,15 +71,17 @@ def upload(apikey,secret,packfile,server):
 @click.argument('apikey')
 @click.argument('secret')
 @click.option('--packfile', help='download pack file name (will write to stdout if omitted)')
+@click.option('--threshold', help='minimal score threshold for suggestions (defaults to 5.0)',default="5")
 @click.option('--server', help='JITT server to download data from', default='http://jitt.io')
-def download(apikey,secret,packfile,server):
+def download(apikey,secret,packfile,threshold,server):
     "download pack from JITT Server"
     if packfile is None:
         packfile = sys.stdin
     else:
         packfile = file(packfile)
     token = get_token(secret.encode('utf8'))
-    url = server.rstrip('/') + '/api/download'
+    threshold = float(threshold)
+    url = server.rstrip('/') + '/api/download?threshold=%.2f' % threshold
     try:
         resp = requests.get(url,params={'apikey':apikey,'token':token})
         if resp.status_code == 200:
