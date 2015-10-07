@@ -86,6 +86,8 @@ The process is simple:
 
     `$ jitter download <API key> <API secret> | jitter unpack --rootdir <path-to-work-tree>`
 
+   Only suggestions that pass a certain quality level will be downloaded (you can set the threshold as high as you like).
+
 ## Preparing your resource files
 
 ### General Recommendations
