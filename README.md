@@ -36,11 +36,11 @@ The process is simple:
 
 1. Generate a personalized translation link for one user and one locale:
 
-  `$ jitter link <API key> <API secret> <User Id> <locale>`
+  `$ jitter link <API key> <link-token> <User Id> <locale>`
 
   *For example (for otto@lidenbrock.org, Icelandic):*
 
-       $ jitter link 0123456789abcdef fedbca9876543210 otto@lidenbrock.org is
+       $ jitter link 0123456789abcdef fedbca98 otto@lidenbrock.org is
 
        http://jitt.io/#/start/0123456789abcdef/is/b956ee5099d840cbbc54fddffb180793cf48e77c/otto@lidenbrock.org
 
@@ -64,7 +64,7 @@ The process is simple:
 
     Java snippet:
 
-         SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(),"HmacSHA1");
+         SecretKeySpec keySpec = new SecretKeySpec(linktoken.getBytes(),"HmacSHA1");
 
          Mac mac = Mac.getInstance("HmacSHA1");
          mac.init(keySpec);

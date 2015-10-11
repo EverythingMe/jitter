@@ -106,13 +106,13 @@ def unpack(variant,input,rootdir):
 
 @entrypoint.command()
 @click.argument('apikey')
-@click.argument('secret')
+@click.argument('linktoken')
 @click.argument('userid')
 @click.argument('locale')
 @click.option('--server', help='JITT server to upload data to', default='http://jitt.io')
-def link(apikey,secret,userid,locale,server):
+def link(apikey,linktoken,userid,locale,server):
     "Get translation link for a user"
-    token = get_token(secret.encode('utf8'),userid)
+    token = get_token(linktoken.encode('utf8'),userid)
     server = server.rstrip('/')
     url = '%s/#/start/%s/%s/%s/%s' % (server,apikey,locale,token,userid)
     print(url)

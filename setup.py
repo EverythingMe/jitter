@@ -1,4 +1,4 @@
-VERSION = "0.1.15"
+VERSION = "0.1.16"
 try:
     from setuptools import setup
 except ImportError:
