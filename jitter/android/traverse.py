@@ -1,8 +1,10 @@
+from __future__ import print_function
 import os
+import sys
 import json
 from lxml import etree
 
-LOCALES = json.load(file(os.path.join(os.path.dirname(__file__),'locales.json')))
+LANGUAGES = json.load(file(os.path.join(os.path.dirname(__file__),'languages.json')))
 PLURALS = json.load(file(os.path.join(os.path.dirname(__file__),'plurals.json')))
 
 def indent(elem, level=0):
@@ -34,15 +36,26 @@ def traverse(rootdir, visitor):
             if len(parts)==1:
                 locale=None
             else:
-                locale = parts[1]
-                if locale not in LOCALES:
+                lang = parts[1]
+                if lang not in LANGUAGES:
                     continue
+                locale = language.lower()
+                if len(parts)>2:
+                    region = parts[2]
+                    if not region.startswith('r'):
+                        continue
+                    region = region[1:]
+                    locale = locale+'-r'+region.upper()
             for fn in filter(lambda x:x.endswith('.xml'),filenames):
                 modified = False
                 fn = os.path.join(dirpath,fn)
                 original_filename = fn.replace(rootdir,'')
                 parser = etree.XMLParser(remove_blank_text=True)
-                tree = etree.parse(fn,parser)
+                try:
+                    tree = etree.parse(fn,parser)
+                except Exception,e:
+                    print("Error in file %s, %s" % (fn,e),file=sys.stderr)
+                    continue
                 root = tree.getroot()
                 if root.tag!='resources':
                     continue
