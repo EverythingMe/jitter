@@ -4,9 +4,19 @@ import itertools
 
 from lxml import etree
 
-from traverse import traverse, indent
+from traverse import traverse, indent, LANGUAGES, COUNTRIES
 
 BASE_XML = '<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"></resources>'
+
+def check_locale(locale):
+    locale_parts = locale.split('-')
+    if len(locale_parts)>0 and locale_parts[0] not in LANGUAGES:
+        print "skipping bad language %s" % locale.encode('utf8')
+        return False
+    elif len(locale_parts)>1 and locale_parts[1][1:] not in COUNTRIES:
+        print "skipping bad country %s" % locale.encode('utf8')
+        return False
+    return True
 
 def process_pack(root_dir,server_pack):
     server_pack = dict((x['name'],x) for x in server_pack)
@@ -24,7 +34,8 @@ def process_pack(root_dir,server_pack):
             localized = update_pack.get(canonic_name,{}).get('locales',{})
             text = localized.get(locale)
             if text is not None:
-                if subel.text != text:
+
+                if check_locale(locale) and subel.text != text:
                     subel.text = text
                     print canonic_name,"<--",locale,"<--",text.encode('utf8')
                     modified = True
@@ -44,6 +55,8 @@ def process_pack(root_dir,server_pack):
         filename = os.path.join(root_dir,filename)
         for res in resources:
             for locale, text in res.get('locales').iteritems():
+                if not check_locale(locale):
+                    continue
                 localized_filename = filename.replace(os.path.sep+'values'+os.path.sep,os.path.sep+'values-%s' % locale+os.path.sep)
                 # Create the file if needed
                 if not os.path.isfile(localized_filename):

@@ -5,6 +5,7 @@ import json
 from lxml import etree
 
 LANGUAGES = json.load(file(os.path.join(os.path.dirname(__file__),'languages.json')))
+COUNTRIES = json.load(file(os.path.join(os.path.dirname(__file__),'countries.json')))
 PLURALS = json.load(file(os.path.join(os.path.dirname(__file__),'plurals.json')))
 
 def indent(elem, level=0):
@@ -36,13 +37,15 @@ def traverse(rootdir, visitor):
             if len(parts)==1:
                 locale=None
             else:
-                lang = parts[1]
-                if lang not in LANGUAGES:
+                language = parts[1]
+                if language not in LANGUAGES:
                     continue
                 locale = language.lower()
                 if len(parts)>2:
                     region = parts[2]
                     if not region.startswith('r'):
+                        continue
+                    if not region[1:] in COUNTRIES:
                         continue
                     region = region[1:]
                     locale = locale+'-r'+region.upper()
